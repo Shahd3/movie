@@ -28,7 +28,6 @@
     footer{position:fixed;left:0;right:0;bottom:0;background:linear-gradient(0deg,rgba(11,11,15,.95),rgba(11,11,15,.8));border-top:1px solid rgba(255,255,255,.06);padding:10px 16px}
     .footer-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
     .results{font-weight:700;color:var(--accent2);white-space:nowrap;overflow:auto}
-    .note{color:var(--muted);font-size:.86rem;text-align:center;margin-top:10px}
     .panel{background:#121219;border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:12px;margin-top:14px}
     .list{display:grid;grid-template-columns:1fr;gap:6px}
     @media(min-width:800px){.list{grid-template-columns:1fr 1fr}}
@@ -48,7 +47,6 @@
       <button type="submit">Save Name</button>
     </form>
     <div class="small" id="whoami"></div>
-    <div class="note">One vote per name is enforced by the database. If you need to change your vote, ask the host to clear it.</div>
   </header>
 
   <main class="container">
@@ -91,7 +89,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
     import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
-    // YOUR config
+    // YOUR config (from your message)
     const firebaseConfig = {
       apiKey: "AIzaSyDNemIoEk3N3EaWfNS11tF_GddwfAcYWCw",
       authDomain: "movie-b6266.firebaseapp.com",
@@ -116,10 +114,10 @@
       "Weapons"
     ];
 
-    // Helpers
+    // Helpers (use getElementById for IDs with spaces/smart quotes)
     const $ = (q) => document.querySelector(q);
     const $$ = (q) => Array.from(document.querySelectorAll(q));
-    const byId = (id) => document.getElementById(id); // <-- safe for IDs with spaces/smart quotes
+    const byId = (id) => document.getElementById(id);
 
     // Name handling
     const NAME_KEY = "movie-night-name";
@@ -211,8 +209,7 @@
     $$(".vote").forEach(btn => {
       btn.addEventListener("click", ()=> submitVote(btn.dataset.movie));
     });
-
-    // (Optional) window.__clearVotes = ...
   </script>
 </body>
 </html>
+

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Movie Night Voting 🎥🍿</title>
+    <meta name="description" content="Vote for tonight's movie — trailers + live tally."/>
+    <style>
+        :root{
+            --bg:#0b0b0f;
+            --card:#15151c;
+            --accent:#ffd166;
+            --accent-2:#f4a261;
+            --text:#f7f7fb;
+            --muted:#b8b8c7;
+        }
+        *{box-sizing:border-box}
+        body{
+            margin:0;
+            font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial;
+            background:linear-gradient(180deg, #0b0b0f 0%, #12121a 100%);
+            color:var(--text);
+            line-height:1.5;
+        }
+        header{
+            padding:28px 16px 8px;
+            text-align:center;
+        }
+        h1{
+            margin:0 0 6px;
+            font-size:clamp(1.4rem, 2.4vw, 2rem);
+            letter-spacing:0.3px;
+        }
+        .sub{
+            color:var(--muted);
+            font-size:0.95rem;
+            margin-bottom:8px;
+        }
+        .container{
+            max-width:1100px;
+            margin:0 auto;
+            padding:12px 16px 88px;
+        }
+        .genre{
+            margin-top:22px;
+            margin-bottom:6px;
+            display:flex;
+            align-items:center;
+            gap:10px;
+            color:var(--accent);
+            font-weight:700;
+            letter-spacing:0.2px;
+        }
+        .genre .pill{
+            background:rgba(255,209,102,0.12);
+            border:1px solid rgba(255,209,102,0.25);
+            padding:6px 10px;
+            border-radius:999px;
+            font-size:0.8rem;
+        }
+        .grid{
+            display:grid;
+            grid-template-columns:1fr;
+            gap:16px;
+        }
+        @media(min-width:700px){
+            .grid{grid-template-columns:1fr 1fr}
+        }
+        .card{
+            background:var(--card);
+            border:1px solid rgba(255,255,255,0.06);
+            border-radius:16px;
+            overflow:hidden;
+            box-shadow:0 8px 24px rgba(0,0,0,0.32);
+            display:flex;
+            flex-direction:column;
+        }
+        .media{
+            aspect-ratio:16/9;
+            width:100%;
+            background:#000;
+            border-bottom:1px solid rgba(255,255,255,0.06);
+        }
+        .content{
+            padding:14px;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:12px;
+        }
+        .title{
+            font-weight:700;
+            font-size:1rem;
+        }
+        .actions{
+            display:flex;
+            align-items:center;
+            gap:8px;
+        }
+        button.vote{
+            cursor:pointer;
+            border:none;
+            background:var(--accent);
+            color:#121212;
+            font-weight:800;
+            padding:10px 14px;
+            border-radius:12px;
+            transition:transform .06s ease, filter .2s ease;
+        }
+        button.vote:hover{ transform:translateY(-1px); filter:brightness(1.05); }
+        button.vote:active{ transform:translateY(0); }
+        .counter{
+            color:var(--muted);
+            font-size:0.9rem;
+            min-width:56px;
+            text-align:right;
+        }
+        footer{
+            position:fixed;
+            left:0; right:0; bottom:0;
+            background:linear-gradient(0deg, rgba(11,11,15,0.95), rgba(11,11,15,0.80));
+            border-top:1px solid rgba(255,255,255,0.06);
+            padding:10px 16px;
+        }
+        .footer-inner{
+            max-width:1100px;
+            margin:0 auto;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:12px;
+        }
+        .results{
+            font-weight:700;
+            color:var(--accent-2);
+            white-space:nowrap;
+            overflow:auto;
+        }
+        .reset{
+            background:transparent;
+            color:var(--muted);
+            border:1px solid rgba(255,255,255,0.18);
+            padding:8px 12px;
+            border-radius:10px;
+            cursor:pointer;
+        }
+        .note{
+            color:var(--muted);
+            font-size:0.82rem;
+            text-align:center;
+            margin-top:10px;
+        }
+        a { color: var(--accent); }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Movie Night Voting 🎥🍿</h1>
+        <div class="sub">Watch trailers, tap your pick, and we’ll see the winner instantly.</div>
+        <div class="note">Votes are saved locally on this device (no backend). Deploy once, share the link, and everyone can vote on their own device.</div>
+    </header>
+
+    <main class="container">
+        <!-- Action, Adventure -->
+        <div class="genre"><span>Genre:</span><span class="pill">Action, Adventure</span></div>
+        <section class="grid" id="ga">
+            <article class="card" data-title="Cleaner">
+                <iframe class="media" src="https://www.youtube.com/embed/4KIOLMv2ItI" title="Cleaner Trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <div class="content">
+                    <div class="title">Cleaner</div>
+                    <div class="actions">
+                        <button class="vote" data-movie="Cleaner">Vote</button>
+                        <div class="counter" id="count-Cleaner">0</div>
+                    </div>
+                </div>
+            </article>
+            <article class="card" data-title="Indiana Jones and the Dial of Destiny">
+                <iframe class="media" src="https://www.youtube.com/embed/eQfMbSe7F2g" title="Indiana Jones and the Dial of Destiny Trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <div class="content">
+                    <div class="title">Indiana Jones and the Dial of Destiny</div>
+                    <div class="actions">
+                        <button class="vote" data-movie="Indiana Jones and the Dial of Destiny">Vote</button>
+                        <div class="counter" id="count-Indiana Jones and the Dial of Destiny">0</div>
+                    </div>
+                </div>
+            </article>
+            <article class="card" data-title="The Count of Monte Cristo">
+                <iframe class="media" src="https://www.youtube.com/embed/Jk9ncn5rM-8" title="The Count of Monte Cristo Trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <div class="content">
+                    <div class="title">The Count of Monte Cristo</div>
+                    <div class="actions">
+                        <button class="vote" data-movie="The Count of Monte Cristo">Vote</button>
+                        <div class="counter" id="count-The Count of Monte Cristo">0</div>
+                    </div>
+                </div>
+            </article>
+            <article class="card" data-title="The Hitman’s Bodyguard">
+                <iframe class="media" src="https://www.youtube.com/embed/IpKmt4MpctM" title="The Hitman’s Bodyguard Trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <div class="content">
+                    <div class="title">The Hitman’s Bodyguard</div>
+                    <div class="actions">
+                        <button class="vote" data-movie="The Hitman’s Bodyguard">Vote</button>
+                        <div class="counter" id="count-The Hitman’s Bodyguard">0</div>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <!-- Action, Comedy -->
+        <div class="genre"><span>Genre:</span><span class="pill">Action, Comedy</span></div>
+        <section class="grid" id="gc">
+            <article class="card" data-title="Beverly Hills Cop">
+                <iframe class="media" src="https://www.youtube.com/embed/KoxhkE_U3Ww" title="Beverly Hills Cop Trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <div class="content">
+                    <div class="title">Beverly Hills Cop</div>
+                    <div class="actions">
+                        <button class="vote" data-movie="Beverly Hills Cop">Vote</button>
+                        <div class="counter" id="count-Beverly Hills Cop">0</div>
+                    </div>
+                </div>
+            </article>
+            <article class="card" data-title="Lost City">
+                <iframe class="media" src="https://www.youtube.com/embed/nfKO9rYDmE8" title="Lost City Trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <div class="content">
+                    <div class="title">Lost City</div>
+                    <div class="actions">
+                        <button class="vote" data-movie="Lost City">Vote</button>
+                        <div class="counter" id="count-Lost City">0</div>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <!-- Thriller / Horror -->
+        <div class="genre"><span>Genre:</span><span class="pill">Thriller / Horror</span></div>
+        <section class="grid" id="gt">
+            <article class="card" data-title="Don’t Move">
+                <iframe class="media" src="https://www.youtube.com/embed/YjTZMEbpKsc" title="Don’t Move Trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <div class="content">
+                    <div class="title">Don’t Move</div>
+                    <div class="actions">
+                        <button class="vote" data-movie="Don’t Move">Vote</button>
+                        <div class="counter" id="count-Don’t Move">0</div>
+                    </div>
+                </div>
+            </article>
+            <article class="card" data-title="Weapons">
+                <iframe class="media" src="https://www.youtube.com/embed/OpThntO9ixc" title="Weapons Trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <div class="content">
+                    <div class="title">Weapons</div>
+                    <div class="actions">
+                        <button class="vote" data-movie="Weapons">Vote</button>
+                        <div class="counter" id="count-Weapons">0</div>
+                    </div>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-inner">
+            <div class="results" id="results">No votes yet.</div>
+            <div style="display:flex; gap:8px; align-items:center;">
+                <button class="reset" id="resetVotes" title="Clear all votes on this device">Reset</button>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple localStorage-based vote store
+        const MOVIES = [
+            "Cleaner",
+            "Indiana Jones and the Dial of Destiny",
+            "The Count of Monte Cristo",
+            "The Hitman’s Bodyguard",
+            "Beverly Hills Cop",
+            "Lost City",
+            "Don’t Move",
+            "Weapons"
+        ];
+
+        const KEY = "movie-night-votes-v1";
+        const $ = (q) => document.querySelector(q);
+        const $$ = (q) => Array.from(document.querySelectorAll(q));
+
+        function loadVotes(){
+            try{
+                const raw = localStorage.getItem(KEY);
+                if(!raw) return {};
+                const data = JSON.parse(raw);
+                return typeof data === 'object' && data ? data : {};
+            }catch(e){
+                return {};
+            }
+        }
+
+        function saveVotes(v){
+            localStorage.setItem(KEY, JSON.stringify(v));
+        }
+
+        function render(votes){
+            // per-card counters
+            for(const m of MOVIES){
+                const el = document.getElementById("count-"+m);
+                if(el) el.textContent = votes[m] || 0;
+            }
+            // results ticker
+            const sorted = Object.entries(votes).sort((a,b)=> (b[1]||0)-(a[1]||0));
+            const text = sorted.length
+              ? sorted.map(([m,c])=> `${m}: ${c}`).join("  •  ")
+              : "No votes yet.";
+            $("#results").textContent = text;
+            // title tooltip with leader
+            if(sorted.length && sorted[0][1] > 0){
+                document.title = `Leading: ${sorted[0][0]} (${sorted[0][1]}) — Movie Night Voting`;
+            }
+        }
+
+        const votes = loadVotes();
+        render(votes);
+
+        $$("button.vote").forEach(btn=>{
+            btn.addEventListener('click',()=>{
+                const movie = btn.dataset.movie;
+                votes[movie] = (votes[movie]||0) + 1;
+                saveVotes(votes);
+                render(votes);
+                btn.animate([{transform:'translateY(0)'},{transform:'translateY(-2px)'}],{duration:120});
+            });
+        });
+
+        $("#resetVotes").addEventListener('click', ()=>{
+            if(confirm('Reset all votes on this device?')){
+                for(const m of MOVIES) votes[m]=0;
+                saveVotes(votes);
+                render(votes);
+            }
+        });
+    </script>
+</body>
+</html>

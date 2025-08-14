@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Movie Night Voting — One Vote Per Person</title>
+  <meta name="description" content="Enter your name, vote once. Live results and who voted for what."/>
+  <style>
+    :root{ --bg:#0b0b0f; --card:#15151c; --accent:#ffd166; --accent2:#f4a261; --text:#f7f7fb; --muted:#b8b8c7; }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;background:#0b0b0f;color:var(--text)}
+    header{padding:28px 16px 8px;text-align:center}
+    h1{margin:0 0 6px;font-size:clamp(1.4rem, 2.4vw, 2rem)}
+    .sub{color:var(--muted);font-size:.95rem;margin-bottom:10px}
+    .container{max-width:1100px;margin:0 auto;padding:12px 16px 96px}
+    .genre{margin:22px 0 6px;display:flex;align-items:center;gap:10px;color:var(--accent);font-weight:700}
+    .genre .pill{background:rgba(255,209,102,.12);border:1px solid rgba(255,209,102,.25);padding:6px 10px;border-radius:999px;font-size:.8rem}
+    .grid{display:grid;grid-template-columns:1fr;gap:16px}
+    @media(min-width:700px){.grid{grid-template-columns:1fr 1fr}}
+    .card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:16px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.32);display:flex;flex-direction:column}
+    .media{aspect-ratio:16/9;width:100%;background:#000;border-bottom:1px solid rgba(255,255,255,.06)}
+    .content{padding:14px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .title{font-weight:700;font-size:1rem}
+    .actions{display:flex;align-items:center;gap:8px}
+    button.vote{cursor:pointer;border:none;background:var(--accent);color:#121212;font-weight:800;padding:10px 14px;border-radius:12px}
+    button.vote[disabled]{opacity:.5;cursor:not-allowed}
+    .counter{color:var(--muted);font-size:.9rem;min-width:56px;text-align:right}
+    footer{position:fixed;left:0;right:0;bottom:0;background:linear-gradient(0deg,rgba(11,11,15,.95),rgba(11,11,15,.8));border-top:1px solid rgba(255,255,255,.06);padding:10px 16px}
+    .footer-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .results{font-weight:700;color:var(--accent2);white-space:nowrap;overflow:auto}
+    .note{color:var(--muted);font-size:.86rem;text-align:center;margin-top:10px}
+    .panel{background:#121219;border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:12px;margin-top:14px}
+    .list{display:grid;grid-template-columns:1fr;gap:6px}
+    @media(min-width:800px){.list{grid-template-columns:1fr 1fr}}
+    .badge{display:inline-block;padding:2px 8px;border-radius:999px;background:rgba(255,209,102,.12);border:1px solid rgba(255,209,102,.25);color:var(--accent);font-size:.78rem;margin-left:6px}
+    .nameform{display:flex;gap:8px;justify-content:center;padding:8px}
+    .nameform input{padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:#0f0f14;color:var(--text);min-width:220px}
+    .nameform button{padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:var(--accent);color:#121212;font-weight:800;cursor:pointer}
+    .small{color:var(--muted);font-size:.82rem}
+    .error{color:#ff7b7b;margin-top:6px}
+    .success{color:#8ad07a;margin-top:6px}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Movie Night Voting 🎥🍿</h1>
+    <div class="sub">Enter your name, vote once, and see live results + who voted for what.</div>
+    <form class="nameform" id="nameForm">
+      <input id="nameInput" type="text" placeholder="Enter your name (one vote per name)" required />
+      <button type="submit">Save Name</button>
+    </form>
+    <div class="small" id="whoami"></div>
+    <div class="note">One vote per name is enforced by the database. If you need to change your vote, ask the host to clear it.</div>
+  </header>
+
+  <main class="container">
+    <!-- Action, Adventure -->
+    <div class="genre"><span>Genre:</span><span class="pill">Action, Adventure</span></div>
+    <section class="grid">
+      <article class="card" data-title="Cleaner">
+        <iframe class="media" src="https://www.youtube.com/embed/4KIOLMv2ItI" title="Cleaner Trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <div class="content"><div class="title">Cleaner</div><div class="actions"><button class="vote" data-movie="Cleaner">Vote</button><div class="counter" id="count-Cleaner">0</div></div></div>
+      </article>
+      <article class="card" data-title="Indiana Jones and the Dial of Destiny">
+        <iframe class="media" src="https://www.youtube.com/embed/eQfMbSe7F2g" title="Indiana Jones and the Dial of Destiny Trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <div class="content"><div class="title">Indiana Jones and the Dial of Destiny</div><div class="actions"><button class="vote" data-movie="Indiana Jones and the Dial of Destiny">Vote</button><div class="counter" id="count-Indiana Jones and the Dial of Destiny">0</div></div></div>
+      </article>
+      <article class="card" data-title="The Count of Monte Cristo">
+        <iframe class="media" src="https://www.youtube.com/embed/Jk9ncn5rM-8" title="The Count of Monte Cristo Trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <div class="content"><div class="title">The Count of Monte Cristo</div><div class="actions"><button class="vote" data-movie="The Count of Monte Cristo">Vote</button><div class="counter" id="count-The Count of Monte Cristo">0</div></div></div>
+      </article>
+      <article class="card" data-title="The Hitman’s Bodyguard">
+        <iframe class="media" src="https://www.youtube.com/embed/IpKmt4MpctM" title="The Hitman’s Bodyguard Trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <div class="content"><div class="title">The Hitman’s Bodyguard</div><div class="actions"><button class="vote" data-movie="The Hitman’s Bodyguard">Vote</button><div class="counter" id="count-The Hitman’s Bodyguard">0</div></div></div>
+      </article>
+    </section>
+
+    <!-- Action, Comedy -->
+    <div class="genre"><span>Genre:</span><span class="pill">Action, Comedy</span></div>
+    <section class="grid">
+      <article class="card" data-title="Beverly Hills Cop">
+        <iframe class="media" src="https://www.youtube.com/embed/KoxhkE_U3Ww" title="Beverly Hills Cop Trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <div class="content"><div class="title">Beverly Hills Cop</div><div class="actions"><button class="vote" data-movie="Beverly Hills Cop">Vote</button><div class="counter" id="count-Beverly Hills Cop">0</div></div></div>
+      </article>
+      <article class="card" data-title="Lost City">
+        <iframe class="media" src="https://www.youtube.com/embed/nfKO9rYDmE8" title="Lost City Trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <div class="content"><div class="title">Lost City</div><div class="actions"><button class="vote" data-movie="Lost City">Vote</button><div class="counter" id="count-Lost City">0</div></div></div>
+      </article>
+    </section>
+
+    <!-- Thriller / Horror -->
+    <div class="genre"><span>Genre:</span><span class="pill">Thriller / Horror</span></div>
+    <section class="grid">
+      <article class="card" data-title="Don’t Move">
+        <iframe class="media" src="https://www.youtube.com/embed/YjTZMEbpKsc" title="Don’t Move Trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <div class="content"><div class="title">Don’t Move</div><div class="actions"><button class="vote" data-movie="Don’t Move">Vote</button><div class="counter" id="count-Don’t Move">0</div></div></div>
+      </article>
+      <article class="card" data-title="Weapons">
+        <iframe class="media" src="https://www.youtube.com/embed/OpThntO9ixc" title="Weapons Trailer" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <div class="content"><div class="title">Weapons</div><div class="actions"><button class="vote" data-movie="Weapons">Vote</button><div class="counter" id="count-Weapons">0</div></div></div>
+      </article>
+    </section>
+
+    <section class="panel">
+      <h3>Who voted for what</h3>
+      <div class="small">Live list updates as people vote.</div>
+      <div id="voterList" class="list"></div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="results" id="results">No votes yet.</div>
+      <div class="small">Host controls are in the console (clear votes).</div>
+    </div>
+  </footer>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    // 1) Replace with your Firebase project's config (Project settings -> General -> Your apps)
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const MOVIES = [
+      "Cleaner",
+      "Indiana Jones and the Dial of Destiny",
+      "The Count of Monte Cristo",
+      "The Hitman’s Bodyguard",
+      "Beverly Hills Cop",
+      "Lost City",
+      "Don’t Move",
+      "Weapons"
+    ];
+
+    const $ = (q) => document.querySelector(q);
+    const $$ = (q) => Array.from(document.querySelectorAll(q));
+
+    // Name handling
+    const NAME_KEY = "movie-night-name";
+    const nameInput = $("#nameInput");
+    const whoami = $("#whoami");
+    const nameForm = $("#nameForm");
+    const setName = (n) => {
+      localStorage.setItem(NAME_KEY, n);
+      whoami.textContent = n ? `You are: ${n}` : "";
+      updateVoteButtons();
+    };
+    nameForm.addEventListener("submit", (e)=>{
+      e.preventDefault();
+      const n = (nameInput.value || "").trim();
+      if(!n){ alert("Enter your name first."); return; }
+      setName(n);
+      nameInput.value = "";
+    });
+    setName(localStorage.getItem(NAME_KEY) || "");
+
+    // Sanitize a name to a Firestore doc id: lowercase + remove spaces & non-alphanumerics except _.-
+    const toId = (s) => (s || "").toLowerCase().normalize("NFKD").replace(/[\s]+/g,"-").replace(/[^a-z0-9._-]/g,"");
+
+    // Vote logic: one vote per name
+    async function submitVote(movie){
+      const name = (localStorage.getItem(NAME_KEY) || "").trim();
+      if(!name){
+        alert("Enter your name first at the top.");
+        return;
+      }
+      const id = toId(name);
+      if(!id){
+        alert("Invalid name. Try letters and numbers.");
+        return;
+      }
+      const voterRef = doc(db, "voters", id);
+      const existing = await getDoc(voterRef);
+      if (existing.exists()){
+        alert("You already voted. One vote per name.");
+        return;
+      }
+      await setDoc(voterRef, { name, movie, timestamp: serverTimestamp() });
+      // UI feedback
+      updateVoteButtons();
+    }
+
+    // Tally + live list
+    const counters = Object.fromEntries(MOVIES.map(m=>[m,0]));
+    const countEls = Object.fromEntries(MOVIES.map(m=>[m, $("#count-"+m)]));
+
+    function renderTally(){
+      for(const m of MOVIES){
+        if(countEls[m]) countEls[m].textContent = counters[m] || 0;
+      }
+      const sorted = Object.entries(counters).sort((a,b)=> (b[1]||0)-(a[1]||0));
+      const text = sorted[0] && sorted[0][1] > 0
+        ? sorted.map(([m,c])=> `${m}: ${c}`).join("  •  ")
+        : "No votes yet.";
+      $("#results").textContent = text;
+      if(sorted[0] && sorted[0][1] > 0){ document.title = `Leading: ${sorted[0][0]} (${sorted[0][1]}) — Movie Night`; }
+    }
+
+    function renderVoterList(snapshot){
+      // reset counts
+      for(const m of MOVIES){ counters[m] = 0; }
+      const list = $("#voterList");
+      list.innerHTML = "";
+      snapshot.forEach(docSnap => {
+        const v = docSnap.data();
+        const name = v.name || "Anonymous";
+        const movie = v.movie || "—";
+        if (counters[movie] !== undefined) counters[movie]++;
+        const item = document.createElement("div");
+        item.textContent = `${name} `;
+        const badge = document.createElement("span");
+        badge.className = "badge";
+        badge.textContent = movie;
+        item.appendChild(badge);
+        list.appendChild(item);
+      });
+      renderTally();
+      updateVoteButtons();
+    }
+
+    // Subscribe to voters collection
+    onSnapshot(collection(db, "voters"), renderVoterList);
+
+    // Enable/disable voting if already voted
+    async function updateVoteButtons(){
+      const name = (localStorage.getItem(NAME_KEY) || "").trim();
+      const id = toId(name);
+      let voted = false;
+      if(id){
+        const voterRef = doc(db, "voters", id);
+        const existing = await getDoc(voterRef);
+        voted = existing.exists();
+      }
+      $$(".vote").forEach(btn => btn.disabled = voted);
+      whoami.textContent = name ? (voted ? `You are: ${name} (already voted)` : `You are: ${name}`) : "";
+    }
+
+    // Wire vote buttons
+    $$(".vote").forEach(btn => {
+      btn.addEventListener("click", ()=> submitVote(btn.dataset.movie));
+    });
+
+    // Host helper in console: clear all votes (only works if rules allow, by default they don't)
+    window.__clearVotes = () => console.warn("Clearing requires temporary rules or manual delete in Firebase Console.");
+  </script>
+</body>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyDNemIoEk3N3EaWfNS11tF_GddwfAcYWCw",
+    authDomain: "movie-b6266.firebaseapp.com",
+    projectId: "movie-b6266",
+    storageBucket: "movie-b6266.firebasestorage.app",
+    messagingSenderId: "24081623070",
+    appId: "1:24081623070:web:76159b19d905961d81e60f",
+    measurementId: "G-MQRVBQRZQ0"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+</html>
